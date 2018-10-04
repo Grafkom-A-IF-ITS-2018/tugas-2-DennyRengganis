@@ -108,6 +108,18 @@
         }
         return mat
       }
+      function matrixRotating(mat,deg,xCore,yCore)
+      {
+        degRad = deg * (Math.PI/180)
+        for(var i=0;i<mat.length/3;i++)
+        {
+          var x = mat[i*3]-xCore
+          var y = mat[i*3+2]-yCore
+          mat[i*3]=Math.cos(degRad)*(x)-Math.sin(degRad)*(y) +xCore
+          mat[i*3+2]=Math.sin(degRad)*(x)+Math.cos(degRad)*(y) +yCore
+        }
+        return mat
+      }
       function setMatrixUniforms() {
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix)
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix)
@@ -123,16 +135,16 @@
         triangleVertexPositionBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer)
         vertices = [
-         0.0, 0.0, 0.0, //
-         0.5, 0.0, 0.0,
-         0.0, 2.0, 0.0, //
-         0.5, 1.5, 0.0,
-         0.5, 2.0, 0.0,
-         1.5, 0.0, 0.0,
-         1.5, 0.5, 0.0,
-         2.0, 0.0, 0.0, //
-         1.5, 2.0, 0.0,
-         2.0, 2.0, 0.0 //
+         -2.0, -2.0, 0.0, 
+         -1.0, -2.0, 0.0,
+         -2.0 , 2.0, 0.0,
+         -1.0, 0.0, 0.0, 
+         -1.0, 2.0, 0.0,
+         1.0, -2.0, 0.0,
+         1.0, 0.0, 0.0,
+         2.0, -2.0, 0.0,
+         1.0, 2.0, 0.0, 
+         2.0, 2.0, 0.0
         ]
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
         triangleVertexPositionBuffer.itemSize = 3
@@ -152,30 +164,30 @@
         squareVertexPositionBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer)
         vertices2 = [
-          3.0, 3.0, 3.0,
-          3.0, -3.0, 3.0,
-          -3.0, 3.0, 3.0,
-          -3.0, -3.0, 3.0,
-          -3.0, -3.0, 3.0,
-          3.0, -3.0, 3.0,
-          3.0, 3.0, 3.0,
-          -3.0, 3.0, 3.0,
-          3.0, 3.0, -3.0,
-          3.0, -3.0, -3.0,
-          -3.0, 3.0, -3.0,
-          -3.0, -3.0, -3.0,
-          -3.0, -3.0, -3.0,
-          3.0, -3.0, -3.0,
-          3.0, 3.0, -3.0,
-          -3.0, 3.0, -3.0,
-          3.0, 3.0, 3.0,
-          3.0, 3.0, -3.0,
-          3.0, -3.0, 3.0,
-          3.0, -3.0, -3.0,
-          -3.0, 3.0, 3.0,
-          -3.0, 3.0, -3.0,
-          -3.0, -3.0, 3.0,
-          -3.0, -3.0, -3.0
+          5.0, 5.0, 5.0,
+          5.0, -5.0, 5.0,
+          -5.0, 5.0, 5.0,
+          -5.0, -5.0, 5.0,
+          -5.0, -5.0, 5.0,
+          5.0, -5.0, 5.0,
+          5.0, 5.0, 5.0,
+          -5.0, 5.0, 5.0,
+          5.0, 5.0, -5.0,
+          5.0, -5.0, -5.0,
+          -5.0, 5.0, -5.0,
+          -5.0, -5.0, -5.0,
+          -5.0, -5.0, -5.0,
+          5.0, -5.0, -5.0,
+          5.0, 5.0, -5.0,
+          -5.0, 5.0, -5.0,
+          5.0, 5.0, 5.0,
+          5.0, 5.0, -5.0,
+          5.0, -5.0, 5.0,
+          5.0, -5.0, -5.0,
+          -5.0, 5.0, 5.0,
+          -5.0, 5.0, -5.0,
+          -5.0, -5.0, 5.0,
+          -5.0, -5.0, -5.0
         ]
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices2), gl.STATIC_DRAW)
         squareVertexPositionBuffer.itemSize = 3
@@ -194,13 +206,27 @@
       var pointArr = [0,3,6,9,12,15,18,21,24,27,30]
       var sumbu = [1,1,1]
       var rotasi = 1.0
+      var cenX=0.0
+      var cenY=0.0
+       function TranslateHuruf()
+      {
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer)
+        vertices = Translasi(vertices,sumbu[0]*0.01,sumbu[1]*0.01,sumbu[2]*0.01)
+        cenX+=(sumbu[0]*0.01)
+        cenY+=(sumbu[1]*0.01)
+        cenZ+=(sumbu[2]*0.01)
+        vertices = matrixRotating(vertices,rotasi*1.5,cenX,cenZ)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+        console.log(vertices)
+      }
+      var cenZ=0.0
       function detectionCollision()
       {
         for(var i = 0;i<sumbu.length;i++)
         {
           for(var k=0;k<pointArr.length;k++)
           {
-            if(vertices[pointArr[k]+i]>=3 || vertices[pointArr[k]+i]<=-3)
+            if(vertices[pointArr[k]+i]>=5 || vertices[pointArr[k]+i]<=-5)
             {
               sumbu[i]*=-1
               rotasi*=-1
@@ -209,13 +235,7 @@
           }
         }
       }
-       function TranslateHuruf()
-      {
-        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer)
-        vertices = Translasi(vertices,sumbu[0]*0.01,sumbu[1]*0.01,sumbu[2]*0.01)
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-        console.log(vertices)
-      }
+
       var rTri = 0
       var rSquare = 0
       function drawScene() {
@@ -223,9 +243,9 @@
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
         mat4.perspective(pMatrix, glMatrix.toRadian(45), gl.viewportWidth / gl.viewportHeight, 0.1, 100.0)
         mat4.identity(mvMatrix)
-        mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -14.0])
+        mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -20.0])
         mvPushMatrix()
-        mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rTri), [0.0, rotasi, 0.0])
+       // mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rTri), [0.0, rotasi, 0.0])
         detectionCollision()
         TranslateHuruf()
         //mat4.rotateY(mvMatrix, mvMatrix, glMatrix.toRadian(rTri))
