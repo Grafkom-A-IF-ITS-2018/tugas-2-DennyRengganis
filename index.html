@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Tugas 1</title>
+    <title>Tugas 2</title>
     <meta http-equiv="content-type" content="text/html" charset="ISO-8859-1">
 
     <script type="text/javascript" src="gl-matrix-min.js"></script>
@@ -191,11 +191,28 @@
         squareVertexColorBuffer.itemSize = 4;
         squareVertexColorBuffer.numItems = 24;
       }
-      
+      var pointArr = [0,3,6,9,12,15,18,21,24,27,30]
+      var sumbu = [1,1,1]
+      var rotasi = 1.0
+      function detectionCollision()
+      {
+        for(var i = 0;i<sumbu.length;i++)
+        {
+          for(var k=0;k<pointArr.length;k++)
+          {
+            if(vertices[pointArr[k]+i]>=3 || vertices[pointArr[k]+i]<=-3)
+            {
+              sumbu[i]*=-1
+              rotasi*=-1
+              break
+            }
+          }
+        }
+      }
        function TranslateHuruf()
       {
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer)
-        vertices = Translasi(vertices,0.01,0.01,0.01)
+        vertices = Translasi(vertices,sumbu[0]*0.01,sumbu[1]*0.01,sumbu[2]*0.01)
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
         console.log(vertices)
       }
@@ -208,7 +225,8 @@
         mat4.identity(mvMatrix)
         mat4.translate(mvMatrix, mvMatrix, [0.0, 0.0, -14.0])
         mvPushMatrix()
-        mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rTri), [0.0, 0.0, 0.0])
+        mat4.rotate(mvMatrix, mvMatrix, glMatrix.toRadian(rTri), [0.0, rotasi, 0.0])
+        detectionCollision()
         TranslateHuruf()
         //mat4.rotateY(mvMatrix, mvMatrix, glMatrix.toRadian(rTri))
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer)
